@@ -10,27 +10,21 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow-x:hidden;}
 body{
-  background:
-    radial-gradient(circle at top, #000 20%, #111 100%),
-    url('dnx_logo.png') center center / cover no-repeat fixed;
-  background-blend-mode: soft-light;
+  background:url('dnx_logo.png') center/contain no-repeat fixed, radial-gradient(circle at top,#000 40%,#111 100%);
+  background-blend-mode:overlay; backdrop-filter:brightness(0.55);
   color:#fff; font-family:"Poppins",sans-serif; text-align:center;
   display:flex; flex-direction:column; justify-content:center; align-items:center;
-  min-height:100vh;
 }
 #langToggle{position:fixed;top:20px;right:25px;padding:8px 14px;border-radius:10px;
   background:rgba(0,0,0,.6);border:1px solid var(--gold);color:var(--gold);cursor:pointer;font-weight:700;z-index:5;}
 h1{font-size:clamp(30px,4.5vw,50px);color:var(--gold);text-shadow:0 0 40px rgba(255,215,0,.7);margin-bottom:8px;}
 p{opacity:.9;margin-bottom:20px;font-size:1.1em;}
 .card{
-  width:min(95%,800px);
-  background:rgba(0,0,0,.78);
-  border:2px solid var(--gold);
-  border-radius:22px;
-  box-shadow:0 0 45px rgba(255,215,0,.3),inset 0 0 40px rgba(255,215,0,.07);
-  padding:25px 18px 40px;
-  display:flex;flex-direction:column;align-items:center;
-  backdrop-filter:blur(6px);
+  width:min(95%,800px);height:85vh;overflow-y:auto;
+  background:rgba(0,0,0,.75);border:2px solid var(--gold);
+  border-radius:22px;box-shadow:0 0 45px rgba(255,215,0,.3),inset 0 0 40px rgba(255,215,0,.07);
+  padding:25px 18px 40px;display:flex;flex-direction:column;justify-content:space-between;align-items:center;
+  backdrop-filter:blur(5px);
 }
 .stats{width:100%;margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;}
 .stat{background:rgba(255,255,255,.05);border:1px solid var(--neon);border-radius:14px;padding:10px;}
