@@ -49,7 +49,7 @@ svg{width:100%;max-width:700px;height:140px;margin:14px auto;}
 <body>
 <button id="langToggle">EN</button>
 <h1 id="title">🌾 DNX FARM ULTRA++</h1>
-<p id="subtitle">ระบบฟาร์มเต็มรูปแบบ รับรางวัลจากเหรียญ Dynamix</p>
+<p id="subtitle">ระบบฟาร์มเต็มรูปแบบ สร้างรายได้จากเหรียญ Dynamix</p>
 
 <div class="card">
   <div class="stats">
@@ -118,7 +118,7 @@ $('claim').onclick=claim;$('refresh').onclick=refreshAll;$('setMax').onclick=set
 connect();
 async function fetchPrice(){try{const res=await fetch("https://api.pancakeswap.info/api/v2/tokens/"+TOKEN);const data=await res.json();$('price').textContent=parseFloat(data.data.price_BNB).toFixed(8);}catch{$('price').textContent='—';}}
 async function drawChart(){const pts=Array.from({length:40},(_,i)=>[i*17,70+Math.sin(Date.now()/1000+i)*25]);$('chart').querySelector('polyline').setAttribute('points',pts.map(p=>p.join(',')).join(' '));}
-let lang='th';const text={th:{title:"🌾 DNX FARM ULTRA++",subtitle:"ระบบฟาร์มเต็มรูปแบบ รับรางวัลจากเหรียญ Dynamix",walletLabel:"กระเป๋า",balLabel:"ยอด DNX ทั้งหมด",stakeLabel:"ที่กำลัง Stake",pendLabel:"รางวัลค้างรับ",needMM:"⚠️ กรุณาติดตั้ง MetaMask ก่อน !",enterAmt:"กรุณากรอกจำนวน DNX !",success:"✅ สำเร็จ !",fail:"❌ ธุรกรรมล้มเหลว ",claimed:"🎁 รับรางวัลแล้ว !"},en:{title:"🌾 DNX FARM ULTRA++",subtitle:"Full-featured farming system to earn rewards from Dynamix.",walletLabel:"Wallet",balLabel:"DNX Balance",stakeLabel:"Staked",pendLabel:"Pending Reward",needMM:"⚠️ Please install MetaMask first!",enterAmt:"Please enter DNX amount!",success:"✅ Success!",fail:"❌ Transaction failed: ",claimed:"🎁 Reward claimed!"}};
+let lang='th';const text={th:{title:"🌾 DNX FARM ULTRA++",subtitle:"ระบบฟาร์มเต็มรูปแบบ สร้างรายได้จากเหรียญ Dynamix",walletLabel:"กระเป๋า",balLabel:"ยอด DNX ทั้งหมด",stakeLabel:"ที่กำลัง Stake",pendLabel:"รางวัลค้างรับ",needMM:"⚠️ กรุณาติดตั้ง MetaMask ก่อน !",enterAmt:"กรุณากรอกจำนวน DNX !",success:"✅ สำเร็จ !",fail:"❌ ธุรกรรมล้มเหลว ",claimed:"🎁 รับรางวัลแล้ว !"},en:{title:"🌾 DNX FARM ULTRA++",subtitle:"Full-featured farming system powered by Dynamix.",walletLabel:"Wallet",balLabel:"DNX Balance",stakeLabel:"Staked",pendLabel:"Pending Reward",needMM:"⚠️ Please install MetaMask first!",enterAmt:"Please enter DNX amount!",success:"✅ Success!",fail:"❌ Transaction failed: ",claimed:"🎁 Reward claimed!"}};
 function msg(k){return text[lang][k]||k;}
 $('langToggle').onclick=()=>{lang=lang==='th'?'en':'th';$('langToggle').textContent=lang==='th'?'EN':'TH';for(const k of ['title','subtitle','walletLabel','balLabel','stakeLabel','pendLabel'])$(k).textContent=text[lang][k];};
 </script>
