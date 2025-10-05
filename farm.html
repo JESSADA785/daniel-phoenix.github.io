@@ -1,173 +1,283 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🌾 DNX Farm</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@6.3.0/dist/ethers.min.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🌾 DNX Farm – Pro</title>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.11.1/dist/ethers.min.js"></script>
+<style>
+  :root{
+    --gold:#ffd700; --neon:#00ffcc; --dark:#0a0a0a;
+  }
+  html,body{height:100%}
+  body{
+    margin:0;
+    color:var(--neon);
+    font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    text-align:center;
+    min-height:100%;
+    /* 🔥 พื้นหลังเต็มจอ */
+    background:url('dnx_logo.png') center/cover no-repeat fixed, radial-gradient(circle at top, #000 40%, #141414 100%);
+  }
+  /* ม่านมืดบาง ๆ ให้ตัวหนังสืออ่านง่าย */
+  .layer{
+    min-height:100%;
+    backdrop-filter: brightness(0.45) saturate(1.1);
+    padding:56px 18px 80px;
+  }
 
-  <style>
-    body {
-      background: url('dnx_logo.png') no-repeat center center fixed;
-      background-size: cover;
-      color: #00ffcc;
-      font-family: "Poppins", sans-serif;
-      text-align: center;
-      padding: 60px 20px;
-      backdrop-filter: brightness(0.4);
-    }
+  h1{
+    margin:6px 0 4px;
+    font-size:clamp(28px, 5vw, 44px);
+    color:var(--gold);
+    letter-spacing:2px;
+    text-shadow:0 0 20px rgba(255,215,0,.6), 0 0 40px rgba(255,215,0,.35);
+  }
+  .sub{color:#e6fff7; opacity:.9; margin-bottom:26px}
 
-    h1 {
-      color: #ffd700;
-      font-size: 2.5em;
-      text-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
-      letter-spacing: 2px;
-      margin-bottom: 5px;
-    }
+  /* การ์ดหลัก */
+  .card{
+    width:min(520px, 92vw);
+    margin:0 auto;
+    padding:26px 22px 28px;
+    background:rgba(0,0,0,.78);
+    border:2px solid var(--gold);
+    border-radius:18px;
+    box-shadow:0 0 30px rgba(255,215,0,.35), inset 0 0 30px rgba(255,215,0,.07);
+    animation:pop .7s ease;
+  }
+  @keyframes pop{from{transform:translateY(18px); opacity:.0} to{transform:none; opacity:1}}
 
-    p {
-      color: #ffffffcc;
-      font-size: 1.2em;
-    }
+  .row{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+  .stat{
+    flex:1 1 220px;
+    min-width:220px;
+    background:linear-gradient(180deg, rgba(255,215,0,.12), rgba(0,255,204,.10));
+    border:1px solid var(--neon);
+    color:#ccfff3;
+    border-radius:12px;
+    padding:12px 14px;
+  }
+  .stat b{color:#fff}
+  .addr{font-family:ui-monospace, SFMono-Regular, Menlo, monospace; color:#bfffea}
 
-    .card {
-      background: rgba(0, 0, 0, 0.75);
-      border: 2px solid #ffd700;
-      border-radius: 18px;
-      box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
-      padding: 30px;
-      max-width: 420px;
-      margin: 50px auto;
-      animation: fadeInUp 1.2s ease;
-    }
+  input{
+    width:min(360px, 86%);
+    padding:12px 14px;
+    margin:12px auto 10px;
+    border-radius:12px;
+    border:1px solid var(--neon);
+    background:rgba(0,0,0,.85);
+    color:var(--neon);
+    text-align:center;
+    font-size:16px;
+    outline:none;
+    box-shadow:0 0 12px rgba(0,255,204,.15) inset;
+  }
 
-    button {
-      background: linear-gradient(90deg, #00ffcc, #00c878);
-      color: #000;
-      font-weight: bold;
-      border: none;
-      border-radius: 12px;
-      padding: 12px 18px;
-      margin: 8px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
+  .btn{
+    appearance:none; border:0; cursor:pointer;
+    padding:12px 18px; margin:6px;
+    border-radius:14px; font-weight:700;
+    color:#000; background:linear-gradient(90deg, #00ffd5, #00c8a7);
+    box-shadow:0 8px 24px rgba(0,255,213,.25), 0 0 18px rgba(0,255,213,.25);
+    transition:transform .15s ease, filter .15s ease, box-shadow .25s ease;
+  }
+  .btn:hover{ transform:translateY(-2px) scale(1.02); filter:brightness(1.1); }
+  .btn.gold{ background:linear-gradient(90deg, #ffd700, #ff9d00); }
+  .btn.ghost{
+    color:var(--gold); background:transparent; border:1px solid var(--gold);
+    box-shadow:none;
+  }
+  .note{color:#c9fff5; font-size:13px; opacity:.9; margin-top:6px}
 
-    button:hover {
-      transform: scale(1.05);
-      background: linear-gradient(90deg, #ffd700, #ff9500);
-      color: #000;
-    }
+  .links{margin-top:16px}
+  .link{
+    display:inline-block; padding:10px 14px; margin:6px 8px;
+    color:var(--gold); border:1px solid var(--gold); border-radius:10px; text-decoration:none; font-weight:700;
+  }
+  .link:hover{background:var(--gold); color:#000}
 
-    input {
-      width: 80%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 10px;
-      border: 1px solid #00ffcc;
-      background: rgba(0,0,0,0.8);
-      color: #00ffcc;
-      text-align: center;
-    }
+  footer{margin-top:46px; color:#dcdcdc; opacity:.75}
 
-    #balance {
-      margin-top: 10px;
-      font-size: 1.2em;
-      color: #ffd700;
-      text-shadow: 0 0 10px rgba(255,215,0,0.8);
-    }
-
-    footer {
-      margin-top: 80px;
-      color: #aaa;
-      font-size: 14px;
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(40px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+  /* แถบวิ่งประกายกรอบ */
+  .card{ position:relative; overflow:hidden }
+  .card:before{
+    content:""; position:absolute; inset:-2px;
+    background:conic-gradient(from 0deg, rgba(255,215,0,.0), rgba(255,215,0,.35), rgba(255,215,0,.0));
+    filter:blur(14px); animation:spin 7s linear infinite;
+    z-index:-1;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg) } }
+</style>
 </head>
 
 <body>
-  <h1>🌾 DNX FARM</h1>
-  <p>Stake your <b>DNX</b> to earn rewards from the Dynamix ecosystem!</p>
+<div class="layer">
+  <h1>DNX FARM</h1>
+  <div class="sub">Stake your <b>DNX</b> to earn rewards from the Dynamix ecosystem.</div>
 
   <div class="card">
-    <button id="connect">🔗 Connect Wallet</button>
-    <div id="wallet" style="margin-top:10px;"></div>
-    <div id="balance"></div>
-    <br />
+    <div id="walletRow" class="row" style="margin-bottom:12px">
+      <div class="stat"><div>Wallet</div><b id="waddr">—</b></div>
+      <div class="stat"><div>DNX Balance</div><b id="bal">—</b></div>
+      <div class="stat"><div>Staked DNX</div><b id="staked">—</b></div>
+    </div>
+
+    <button id="btnConnect" class="btn gold">🔗 Connect Wallet</button>
+    <div class="note" id="netNote">BSC Mainnet required</div>
+
     <input id="amount" placeholder="Enter DNX amount" />
-    <br />
-    <button id="deposit">💰 Deposit (Stake)</button>
-    <button id="withdraw">💎 Withdraw</button>
+    <div>
+      <button id="btnDeposit" class="btn">💰 Deposit (Stake)</button>
+      <button id="btnWithdraw" class="btn">💎 Withdraw</button>
+      <button id="btnRefresh" class="btn ghost">🔄 Refresh</button>
+    </div>
+
+    <div class="links">
+      <a class="link" target="_blank" href="https://bscscan.com/token/0x7DB860CC9D7f64Ed1B39de6621ebc94440C8dc62">🔍 View DNX on BscScan</a>
+      <a class="link" target="_blank" href="https://pancakeswap.finance/info/pairs">📈 View Chart (DNX/BNB)</a>
+    </div>
   </div>
 
-  <footer>🚀 Powered by <b>DNX Finance</b> © 2025</footer>
+  <footer>Powered by <b>DNX Finance</b> © 2025</footer>
+</div>
 
-  <script>
-    let provider, signer, contract, token;
-    const CONTRACT_ADDRESS = "0x9D9649e1710eF013465C34146874F967EEE73B03"; // MasterChef
-    const TOKEN_ADDRESS = "0x7DB860CC9D7f64Ed1B39de6621ebc94440C8dc62"; // DNX Token
+<script>
+/** ====== CONFIG ====== **/
+const CHAIN_ID_HEX = '0x38'; // BSC Mainnet
+const CONTRACT_ADDRESS = '0x9D9649e1710eF013465C34146874F967EEE73B03'; // MasterChef
+const TOKEN_ADDRESS    = '0x7DB860CC9D7f64Ed1B39de6621ebc94440C8dc62'; // DNX
+const ABI = [
+  "function deposit(uint256 _amount) external",
+  "function withdraw(uint256 _amount) external",
+  "function userInfo(address) view returns (uint256 amount, uint256 rewardDebt)"
+];
+const ERC20_ABI = [
+  "function balanceOf(address) view returns (uint256)",
+  "function decimals() view returns (uint8)",
+  "function allowance(address owner, address spender) view returns (uint256)",
+  "function approve(address spender, uint256 value) returns (bool)"
+];
 
-    const ABI = [
-      "function deposit(uint256 _amount) external",
-      "function withdraw(uint256 _amount) external",
-      "function userInfo(address) view returns (uint256 amount, uint256 rewardDebt)"
-    ];
+let provider, signer, chef, dnx, decimals = 18, userAddr = '';
 
-    const TOKEN_ABI = [
-      "function balanceOf(address account) view returns (uint256)",
-      "function decimals() view returns (uint8)"
-    ];
+/** ====== UI helpers ====== **/
+const $ = (id)=>document.getElementById(id);
+const fmt = (v, d=18)=> {
+  try{ return Number(ethers.formatUnits(v, d)).toLocaleString(undefined,{maximumFractionDigits:6}); }
+  catch{ return '0'; }
+};
+function toast(msg){ alert(msg); }
 
-    async function connect() {
-      if (!window.ethereum) return alert("⚠️ Please install MetaMask first!");
-      provider = new ethers.BrowserProvider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      signer = await provider.getSigner();
-      const addr = await signer.getAddress();
-      document.getElementById("wallet").innerHTML = "✅ Connected: " + addr.substring(0,6) + "..." + addr.slice(-4);
-      contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
-      token = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, signer);
-      getBalance(addr);
-    }
-
-    async function getBalance(addr) {
-      const info = await contract.userInfo(addr);
-      const staked = ethers.formatUnits(info.amount, 18);
-      document.getElementById("balance").innerHTML = "📊 Your Staked DNX: <b>" + staked + " DNX</b>";
-    }
-
-    async function deposit() {
-      try {
-        const amt = document.getElementById("amount").value;
-        const tx = await contract.deposit(ethers.parseUnits(amt, 18));
-        await tx.wait();
-        alert("✅ Staked " + amt + " DNX successfully!");
-        getBalance(await signer.getAddress());
-      } catch (err) {
-        alert("❌ Transaction failed: " + err.message);
+/** ====== Network ensure (BSC) ====== **/
+async function ensureBSC(){
+  const cur = await provider.send('eth_chainId', []);
+  if(cur !== CHAIN_ID_HEX){
+    try{
+      await provider.send('wallet_switchEthereumChain', [{ chainId: CHAIN_ID_HEX }]);
+      $('netNote').textContent = 'BSC Mainnet';
+    }catch(e){
+      // Try add chain
+      try{
+        await provider.send('wallet_addEthereumChain', [{
+          chainId: CHAIN_ID_HEX,
+          chainName: 'BNB Smart Chain',
+          nativeCurrency:{name:'BNB', symbol:'BNB', decimals:18},
+          rpcUrls:['https://bsc-dataseed.binance.org/'],
+          blockExplorerUrls:['https://bscscan.com']
+        }]);
+      }catch(err){
+        toast('Please switch network to BSC in MetaMask.'); throw err;
       }
     }
+  }
+}
 
-    async function withdraw() {
-      try {
-        const amt = document.getElementById("amount").value;
-        const tx = await contract.withdraw(ethers.parseUnits(amt, 18));
-        await tx.wait();
-        alert("✅ Withdrawn " + amt + " DNX successfully!");
-        getBalance(await signer.getAddress());
-      } catch (err) {
-        alert("❌ Transaction failed: " + err.message);
-      }
+/** ====== Connect ====== **/
+async function connect(){
+  if(!window.ethereum){ toast('⚠️ Please install MetaMask first.'); return; }
+  provider = new ethers.BrowserProvider(window.ethereum);
+  await provider.send('eth_requestAccounts', []);
+  await ensureBSC();
+
+  signer = await provider.getSigner();
+  userAddr = await signer.getAddress();
+
+  chef = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+  dnx  = new ethers.Contract(TOKEN_ADDRESS, ERC20_ABI, signer);
+  decimals = await dnx.decimals().catch(()=>18);
+
+  $('waddr').textContent = `${userAddr.slice(0,6)}...${userAddr.slice(-4)}`;
+  $('btnConnect').textContent = '✅ Connected';
+  $('btnConnect').disabled = true;
+  $('netNote').style.display='none';
+
+  await refresh();
+}
+
+/** ====== Read balances ====== **/
+async function refresh(){
+  if(!signer){ return; }
+  const [balRaw, info] = await Promise.all([
+    dnx.balanceOf(userAddr),
+    chef.userInfo(userAddr)
+  ]);
+  $('bal').innerHTML    = `<span title="${balRaw}">${fmt(balRaw,decimals)} DNX</span>`;
+  $('staked').innerHTML = `<span title="${info.amount}">${fmt(info.amount,decimals)} DNX</span>`;
+}
+
+/** ====== Approve if needed then deposit ====== **/
+async function deposit(){
+  try{
+    if(!signer) return toast('Connect wallet first.');
+    const amtStr = $('amount').value.trim();
+    if(!amtStr || Number(amtStr)<=0) return toast('Enter DNX amount.');
+    const amt = ethers.parseUnits(amtStr, decimals);
+
+    // approve if allowance < amt
+    const allowance = await dnx.allowance(userAddr, CONTRACT_ADDRESS);
+    if(allowance < amt){
+      const txA = await dnx.approve(CONTRACT_ADDRESS, amt);
+      await txA.wait();
     }
 
-    document.getElementById("connect").onclick = connect;
-    document.getElementById("deposit").onclick = deposit;
-    document.getElementById("withdraw").onclick = withdraw;
-  </script>
+    const tx = await chef.deposit(amt);
+    await tx.wait();
+    toast(`✅ Staked ${amtStr} DNX`);
+    $('amount').value = '';
+    await refresh();
+  }catch(e){ toast(`❌ Deposit failed: ${e.shortMessage || e.message}`); }
+}
+
+/** ====== Withdraw ====== **/
+async function withdraw(){
+  try{
+    if(!signer) return toast('Connect wallet first.');
+    const amtStr = $('amount').value.trim();
+    if(!amtStr || Number(amtStr)<=0) return toast('Enter DNX amount.');
+    const amt = ethers.parseUnits(amtStr, decimals);
+
+    const tx = await chef.withdraw(amt);
+    await tx.wait();
+    toast(`✅ Withdrawn ${amtStr} DNX`);
+    $('amount').value = '';
+    await refresh();
+  }catch(e){ toast(`❌ Withdraw failed: ${e.shortMessage || e.message}`); }
+}
+
+/** ====== Wire up ====== **/
+$('btnConnect').onclick = connect;
+$('btnDeposit').onclick = deposit;
+$('btnWithdraw').onclick = withdraw;
+$('btnRefresh').onclick = refresh;
+
+// Optional: auto-connect if wallet already authorized
+if(window.ethereum){
+  window.ethereum.request({method:'eth_accounts'}).then(a=>{
+    if(a && a.length) connect();
+  });
+}
+</script>
 </body>
 </html>
