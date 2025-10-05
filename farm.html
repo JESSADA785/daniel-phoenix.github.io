@@ -1,259 +1,177 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>🌾 DNX Farm – Ultra+</title>
+<title>🌾 DNX FARM ULTRA++</title>
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.11.1/dist/ethers.min.js"></script>
 <style>
-  :root{ --gold:#ffd700; --neon:#00ffcc; }
-  html,body{height:100%}
-  body{
-    margin:0; color:#dffef8; font-family:Poppins,system-ui,Segoe UI,Roboto,Arial,sans-serif;
-    background:url('dnx_logo.png') center/cover no-repeat fixed, radial-gradient(circle at top, #000 40%, #141414 100%);
-  }
-  .layer{ min-height:100%; backdrop-filter:brightness(.45); padding:56px 18px 80px; text-align:center; }
-  h1{ margin:6px 0 4px; font-size:clamp(28px,5vw,44px); color:var(--gold);
-      letter-spacing:2px; text-shadow:0 0 20px rgba(255,215,0,.6),0 0 40px rgba(255,215,0,.35); }
-  .sub{ opacity:.9; margin-bottom:24px }
-  .card{
-    width:min(560px,95vw); margin:0 auto; padding:22px 18px 26px;
-    background:rgba(0,0,0,.78); border:2px solid var(--gold); border-radius:18px;
-    box-shadow:0 0 30px rgba(255,215,0,.35), inset 0 0 30px rgba(255,215,0,.07);
-    position:relative; overflow:hidden; animation:pop .7s ease;
-  }
-  .card:before{content:"";position:absolute;inset:-2px;background:conic-gradient(from 0deg,rgba(255,215,0,.0),rgba(255,215,0,.35),rgba(255,215,0,.0));filter:blur(14px);animation:spin 7s linear infinite;z-index:-1}
-  @keyframes pop{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-  .stat{flex:1 1 170px;min-width:170px;background:linear-gradient(180deg,rgba(255,215,0,.12),rgba(0,255,204,.10));
-        border:1px solid var(--neon);border-radius:12px;padding:10px 12px}
-  .stat .label{font-size:12px;opacity:.9}
-  .stat .value{font-weight:800;color:#fff}
-  .addr{font-family:ui-monospace,Menlo,Consolas,monospace}
-  input{
-    width:min(380px,88%);padding:12px 14px;margin:12px auto 6px;border-radius:12px;
-    border:1px solid var(--neon);background:rgba(0,0,0,.85);color:#00ffd5;text-align:center;
-    box-shadow:0 0 12px rgba(0,255,204,.15) inset;
-  }
-  .btn{appearance:none;border:0;cursor:pointer;padding:12px 18px;margin:6px;border-radius:14px;font-weight:800;color:#000;
-       background:linear-gradient(90deg,#00ffd5,#00c8a7);box-shadow:0 8px 24px rgba(0,255,213,.25),0 0 18px rgba(0,255,213,.25);
-       transition:transform .15s,filter .15s, box-shadow .25s}
-  .btn:hover{transform:translateY(-2px) scale(1.02);filter:brightness(1.08)}
-  .btn.gold{background:linear-gradient(90deg,#ffd700,#ff9d00)}
-  .btn.ghost{background:transparent;color:var(--gold);border:1px solid var(--gold);box-shadow:none}
-  .links{margin-top:12px}
-  .link{display:inline-block;padding:10px 14px;margin:6px 8px;color:var(--gold);border:1px solid var(--gold);
-        border-radius:10px;text-decoration:none;font-weight:700}
-  .link:hover{background:var(--gold);color:#000}
-  footer{margin-top:42px;opacity:.75}
-  .hint{font-size:13px;opacity:.85;margin-top:4px}
+:root{--gold:#ffd700;--neon:#00ffd5}
+html,body{height:100%;margin:0}
+body{
+  color:#fff;font-family:Poppins,system-ui,sans-serif;text-align:center;
+  background:url('dnx_logo.png') center/contain no-repeat fixed, radial-gradient(circle at top,#000 30%,#111 100%);
+  background-blend-mode:overlay;backdrop-filter:brightness(.5);overflow-x:hidden;
+}
+h1{margin:40px 0 8px;font-size:2.4em;color:var(--gold);text-shadow:0 0 30px rgba(255,215,0,.7)}
+#langToggle{position:fixed;top:18px;right:20px;padding:8px 14px;border-radius:10px;
+  background:rgba(0,0,0,.6);border:1px solid var(--gold);color:var(--gold);cursor:pointer;font-weight:700}
+.card{
+  width:min(560px,95vw);margin:25px auto;padding:26px;background:rgba(0,0,0,.7);
+  border:2px solid var(--gold);border-radius:18px;box-shadow:0 0 25px rgba(255,215,0,.4);
+}
+.stat{display:flex;justify-content:space-between;margin:6px 0;font-size:15px}
+.label{opacity:.85}.value{font-weight:700;color:var(--gold)}
+input{
+  width:80%;padding:10px;margin:12px auto;border-radius:10px;border:1px solid var(--neon);
+  background:rgba(0,0,0,.8);color:var(--neon);text-align:center;
+}
+button{
+  margin:6px;padding:11px 18px;border:0;border-radius:14px;font-weight:700;cursor:pointer;
+  background:linear-gradient(90deg,#00ffd5,#00c8a7);color:#000;transition:.2s;
+}
+button:hover{transform:scale(1.05);background:linear-gradient(90deg,#ffd700,#ff9500)}
+footer{margin-top:40px;font-size:14px;color:#ccc}
+#priceBox{margin:12px;font-size:16px;color:var(--neon)}
+svg{width:90%;max-width:500px;height:120px;margin:auto;display:block}
 </style>
 </head>
 <body>
-<div class="layer">
-  <h1>DNX FARM</h1>
-  <div class="sub">Stake your <b>DNX</b> to earn rewards from the Dynamix ecosystem.</div>
+<button id="langToggle">EN</button>
+<h1 id="title">🌾 DNX FARM ULTRA++</h1>
+<p id="subtitle">ระบบฟาร์มเพื่อรับรางวัลจาก Ecosystem ของ Dynamix</p>
 
-  <div class="card">
-    <!-- Wallet & Stats -->
-    <div class="row" style="margin-bottom:12px">
-      <div class="stat"><div class="label">Wallet</div><div id="waddr" class="value addr">—</div></div>
-      <div class="stat"><div class="label">DNX Balance</div><div id="bal" class="value">—</div></div>
-      <div class="stat"><div class="label">Staked DNX</div><div id="staked" class="value">—</div></div>
-      <div class="stat"><div class="label">Pending Reward</div><div id="pending" class="value" title="Auto-refresh every 10s">—</div></div>
-    </div>
+<div class="card">
+  <div class="stat"><div class="label" id="walletLabel">กระเป๋า</div><div id="waddr" class="value">—</div></div>
+  <div class="stat"><div class="label" id="balLabel">ยอด DNX ทั้งหมด</div><div id="bal" class="value">—</div></div>
+  <div class="stat"><div class="label" id="stakeLabel">ที่กำลัง Stake</div><div id="staked" class="value">—</div></div>
+  <div class="stat"><div class="label" id="pendLabel">รางวัลค้างรับ</div><div id="pending" class="value">—</div></div>
+  <div id="priceBox">ราคาปัจจุบัน DNX/BNB ≈ <span id="price">—</span></div>
 
-    <button id="btnConnect" class="btn gold">🔗 Connect Wallet</button>
-    <div class="hint" id="netNote">BSC Mainnet required</div>
-
-    <input id="amount" placeholder="Enter DNX amount" />
-    <div>
-      <button id="btnDeposit" class="btn">💰 Deposit (Stake)</button>
-      <button id="btnWithdraw" class="btn">💎 Withdraw</button>
-      <button id="btnClaim" class="btn ghost">🎁 Claim Reward</button>
-      <button id="btnRefresh" class="btn ghost">🔄 Refresh</button>
-    </div>
-
-    <div class="links">
-      <a class="link" target="_blank" href="https://bscscan.com/token/0x7DB860CC9D7f64Ed1B39de6621ebc94440C8dc62">🔍 View DNX on BscScan</a>
-      <a class="link" target="_blank" href="https://pancakeswap.finance/info/pairs">📈 View Chart (DNX/BNB)</a>
-    </div>
+  <input id="amount" placeholder="กรอกจำนวน DNX" />
+  <div>
+    <button id="setMax">MAX</button>
+    <button id="deposit">💰 Deposit</button>
+    <button id="withdraw">💎 Withdraw</button>
+    <button id="claim">🎁 Claim</button>
+    <button id="refresh">🔄 Refresh</button>
   </div>
-
-  <footer>Powered by <b>DNX Finance</b> © 2025</footer>
 </div>
 
+<svg id="chart" viewBox="0 0 500 120"><polyline fill="none" stroke="#00ffd5" stroke-width="3" points=""/></svg>
+
+<footer>Powered by <b>DNX Finance</b> © 2025</footer>
+
 <script>
-/* ===== CONFIG ===== */
-const CHAIN_ID_HEX   = '0x38'; // BSC Mainnet
-const CHEF_ADDR      = '0x9D9649e1710eF013465C34146874F967EEE73B03'; // MasterChef
-const DNX_ADDR       = '0x7DB860CC9D7f64Ed1B39de6621ebc94440C8dc62'; // DNX
-
-// Chef ABI (include public getters so we can compute pending off-chain)
-const CHEF_ABI = [
-  "function deposit(uint256 _amount) external",
-  "function withdraw(uint256 _amount) external",
-  "function userInfo(address) view returns (uint256 amount, uint256 rewardDebt)",
-  "function accDNXPerShare() view returns (uint256)",
-  "function lastRewardBlock() view returns (uint256)",
-  "function rewardPerBlock() view returns (uint256)"
+const CHEF='0x9D9649e1710eF013465C34146874F967EEE73B03';
+const TOKEN='0x7DB860CC9D7f64Ed1B39de6621ebc94440C8dc62';
+const CHAIN='0x38';
+const ABIchef=[
+ "function deposit(uint256) external","function withdraw(uint256) external",
+ "function userInfo(address) view returns(uint256 amount,uint256 rewardDebt)",
+ "function accDNXPerShare() view returns(uint256)","function lastRewardBlock() view returns(uint256)",
+ "function rewardPerBlock() view returns(uint256)"
 ];
-
-// ERC20 ABI (balance/decimals/approve)
-const ERC20_ABI = [
-  "function balanceOf(address) view returns (uint256)",
-  "function decimals() view returns (uint8)",
-  "function allowance(address owner, address spender) view returns (uint256)",
-  "function approve(address spender, uint256 value) returns (bool)"
+const ABItoken=[
+ "function balanceOf(address) view returns(uint256)",
+ "function decimals() view returns(uint8)",
+ "function allowance(address,address)view returns(uint256)",
+ "function approve(address,uint256) returns(bool)"
 ];
+let provider,signer,chef,token,user,dec=18;
 
-let provider, signer, chef, dnx, decimals = 18, userAddr = '', refreshTimer;
+const $=id=>document.getElementById(id);
+const fmt=v=>Number(ethers.formatUnits(v,dec)).toLocaleString(undefined,{maximumFractionDigits:6});
 
-/* ===== Helpers ===== */
-const $ = id => document.getElementById(id);
-const fmt = (v, d=18) => {
-  try { return Number(ethers.formatUnits(v, d)).toLocaleString(undefined,{maximumFractionDigits:6}); }
-  catch { return '0'; }
-};
-function toast(m){ alert(m); }
-
-/* ===== Network: Ensure BSC ===== */
-async function ensureBSC(){
-  const cur = await provider.send('eth_chainId', []);
-  if (cur !== CHAIN_ID_HEX) {
-    try {
-      await provider.send('wallet_switchEthereumChain', [{ chainId: CHAIN_ID_HEX }]);
-      $('netNote').style.display='none';
-    } catch (e) {
-      try {
-        await provider.send('wallet_addEthereumChain', [{
-          chainId: CHAIN_ID_HEX,
-          chainName: 'BNB Smart Chain',
-          nativeCurrency:{name:'BNB',symbol:'BNB',decimals:18},
-          rpcUrls:['https://bsc-dataseed.binance.org/'],
-          blockExplorerUrls:['https://bscscan.com']
-        }]);
-      } catch (err) {
-        $('netNote').style.display='block';
-        throw err;
-      }
-    }
-  } else {
-    $('netNote').style.display='none';
-  }
-}
-
-/* ===== Connect ===== */
 async function connect(){
-  if(!window.ethereum) return toast('⚠️ Please install MetaMask first.');
-  provider = new ethers.BrowserProvider(window.ethereum);
-  await provider.send('eth_requestAccounts', []);
-  await ensureBSC();
-
-  signer   = await provider.getSigner();
-  userAddr = await signer.getAddress();
-  chef     = new ethers.Contract(CHEF_ADDR, CHEF_ABI, signer);
-  dnx      = new ethers.Contract(DNX_ADDR,  ERC20_ABI, signer);
-  decimals = await dnx.decimals().catch(()=>18);
-
-  $('waddr').textContent = `${userAddr.slice(0,6)}...${userAddr.slice(-4)}`;
-  $('btnConnect').textContent = '✅ Connected';
-  $('btnConnect').disabled = true;
-
-  await refreshAll();
-  clearInterval(refreshTimer);
-  refreshTimer = setInterval(refreshAll, 10000); // auto refresh every 10s
+ if(!window.ethereum)return alert(msg('needMM'));
+ provider=new ethers.BrowserProvider(window.ethereum);
+ await provider.send("eth_requestAccounts",[]);
+ signer=await provider.getSigner(); user=await signer.getAddress();
+ chef=new ethers.Contract(CHEF,ABIchef,signer); token=new ethers.Contract(TOKEN,ABItoken,signer);
+ dec=await token.decimals(); $('waddr').textContent=user.slice(0,6)+'...'+user.slice(-4);
+ refreshAll(); setInterval(refreshAll,10000);
 }
-
-/* ===== Read Balances + Pending ===== */
 async function refreshAll(){
-  if(!signer) return;
-  const [balRaw, info, accPerShare, lastBlock, rpb] = await Promise.all([
-    dnx.balanceOf(userAddr),
-    chef.userInfo(userAddr),
-    chef.accDNXPerShare(),
-    chef.lastRewardBlock(),
-    chef.rewardPerBlock()
-  ]);
-
-  // Supply is DNX balance of the chef contract (same as in updatePool)
-  const supply = await dnx.balanceOf(CHEF_ADDR);
-  // Simulate accDNXPerShare update since lastRewardBlock (no state change)
-  let acc = accPerShare;
-  const currentBlock = await provider.getBlockNumber();
-  if (currentBlock > Number(lastBlock) && supply > 0n) {
-    const blocks  = BigInt(currentBlock) - BigInt(lastBlock);
-    const reward  = blocks * BigInt(rpb);
-    acc = acc + (reward * 1000000000000n) / BigInt(supply); // *1e12 / supply
+ if(!signer)return;
+ const [bal,info]=await Promise.all([token.balanceOf(user),chef.userInfo(user)]);
+ $('bal').textContent=fmt(bal); $('staked').textContent=fmt(info.amount);
+ $('pending').textContent='⟳'; updatePending(info);
+ fetchPrice(); drawChart();
+}
+async function updatePending(info){
+ const [acc,last,rpb,supply,block]=await Promise.all([
+  chef.accDNXPerShare(),chef.lastRewardBlock(),chef.rewardPerBlock(),
+  token.balanceOf(CHEF),provider.getBlockNumber()
+ ]);
+ let acc2=acc;if(block>Number(last)&&supply>0n){
+  const reward=(BigInt(block)-BigInt(last))*rpb;
+  acc2+=reward*1000000000000n/supply;
+ }
+ const pending=(info.amount*acc2)/1000000000000n-info.rewardDebt;
+ $('pending').textContent=fmt(pending);
+}
+async function act(fn,amt){
+ try{
+  if(!signer)return alert(msg('needMM'));
+  const val=$('amount').value.trim(); if(!val)return alert(msg('enterAmt'));
+  const v=ethers.parseUnits(val,dec);
+  if(fn==='deposit'){
+    const allowance=await token.allowance(user,CHEF);
+    if(allowance<v){const txa=await token.approve(CHEF,v);await txa.wait();}
   }
-  const pending = ((info.amount * acc) / 1000000000000n) - info.rewardDebt;
-
-  $('bal').textContent    = `${fmt(balRaw, decimals)} DNX`;
-  $('staked').textContent = `${fmt(info.amount, decimals)} DNX`;
-  $('pending').textContent= `${fmt(pending, decimals)} DNX`;
+  const tx=await chef[fn](v); await tx.wait();
+  alert(msg('success')); $('amount').value=''; refreshAll();
+ }catch(e){alert(msg('fail')+e.message);}
 }
-
-/* ===== Deposit with auto-approve ===== */
-async function deposit(){
-  try{
-    if(!signer) return toast('Connect wallet first.');
-    const val = $('amount').value.trim();
-    if(!val || Number(val)<=0) return toast('Enter DNX amount.');
-    const amt = ethers.parseUnits(val, decimals);
-    const allowance = await dnx.allowance(userAddr, CHEF_ADDR);
-    if(allowance < amt){
-      const txA = await dnx.approve(CHEF_ADDR, amt);
-      await txA.wait();
-    }
-    const tx = await chef.deposit(amt);
-    await tx.wait();
-    toast(`✅ Staked ${val} DNX`);
-    $('amount').value = '';
-    await refreshAll();
-  }catch(e){ toast(`❌ Deposit failed: ${e.shortMessage || e.message}`); }
-}
-
-/* ===== Withdraw ===== */
-async function withdraw(){
-  try{
-    if(!signer) return toast('Connect wallet first.');
-    const val = $('amount').value.trim();
-    if(!val || Number(val)<=0) return toast('Enter DNX amount.');
-    const amt = ethers.parseUnits(val, decimals);
-    const tx = await chef.withdraw(amt);
-    await tx.wait();
-    toast(`✅ Withdrawn ${val} DNX`);
-    $('amount').value = '';
-    await refreshAll();
-  }catch(e){ toast(`❌ Withdraw failed: ${e.shortMessage || e.message}`); }
-}
-
-/* ===== Claim Reward (harvest) =====
-   Your MasterChef distributes rewards on any deposit/withdraw.
-   We can harvest by calling deposit(0).
-*/
 async function claim(){
-  try{
-    if(!signer) return toast('Connect wallet first.');
-    const tx = await chef.deposit(0); // harvest only
-    await tx.wait();
-    toast('🎁 Reward claimed!');
-    await refreshAll();
-  }catch(e){ toast(`❌ Claim failed: ${e.shortMessage || e.message}`); }
+ try{const tx=await chef.deposit(0);await tx.wait();alert(msg('claimed'));refreshAll();}
+ catch(e){alert(msg('fail')+e.message);}
+}
+async function setMax(){
+ const bal=await token.balanceOf(user);
+ $('amount').value=Number(ethers.formatUnits(bal,dec)).toFixed(6);
+}
+$('deposit').onclick=()=>act('deposit');
+$('withdraw').onclick=()=>act('withdraw');
+$('claim').onclick=claim;
+$('refresh').onclick=refreshAll;
+$('setMax').onclick=setMax;
+connect();
+
+/* === price & mini chart === */
+async function fetchPrice(){
+ try{
+  const res=await fetch("https://api.pancakeswap.info/api/v2/tokens/"+TOKEN);
+  const data=await res.json();
+  $('price').textContent=parseFloat(data.data.price_BNB).toFixed(8);
+ }catch{ $('price').textContent='—'; }
+}
+async function drawChart(){
+ const pts=Array.from({length:30},(_,i)=>[i*17,70+Math.sin(Date.now()/1000+i)*20]);
+ $('chart').querySelector('polyline').setAttribute('points',pts.map(p=>p.join(',')).join(' '));
 }
 
-/* ===== Wire up ===== */
-$('btnConnect').onclick = connect;
-$('btnDeposit').onclick = deposit;
-$('btnWithdraw').onclick = withdraw;
-$('btnClaim').onclick   = claim;
-$('btnRefresh').onclick = refreshAll;
-
-// Auto-connect if previously authorized
-if(window.ethereum){
-  window.ethereum.request({method:'eth_accounts'}).then(a=>{ if(a && a.length) connect(); });
-}
+/* === bilingual toggle === */
+let lang='th';
+const text={
+ th:{title:"🌾 DNX FARM ULTRA++",subtitle:"ระบบฟาร์มเพื่อรับรางวัลจาก Ecosystem ของ Dynamix",
+      walletLabel:"กระเป๋า",balLabel:"ยอด DNX ทั้งหมด",stakeLabel:"ที่กำลัง Stake",
+      pendLabel:"รางวัลค้างรับ",needMM:"⚠️ กรุณาติดตั้ง MetaMask ก่อน !",
+      enterAmt:"กรุณากรอกจำนวน DNX !",success:"✅ สำเร็จ !",fail:"❌ ธุรกรรมล้มเหลว ",
+      claimed:"🎁 รับรางวัลแล้ว !"},
+ en:{title:"🌾 DNX FARM ULTRA++",subtitle:"Stake your DNX to earn rewards from the Dynamix ecosystem.",
+      walletLabel:"Wallet",balLabel:"DNX Balance",stakeLabel:"Staked Amount",
+      pendLabel:"Pending Reward",needMM:"⚠️ Please install MetaMask first!",
+      enterAmt:"Please enter DNX amount!",success:"✅ Success!",fail:"❌ Transaction failed: ",
+      claimed:"🎁 Reward claimed!"}
+};
+function msg(k){return text[lang][k]||k;}
+$('langToggle').onclick=()=>{
+ lang=lang==='th'?'en':'th';$('langToggle').textContent=lang==='th'?'EN':'TH';
+ for(const k of ['title','subtitle','walletLabel','balLabel','stakeLabel','pendLabel'])
+   $(k).textContent=text[lang][k];
+};
 </script>
 </body>
 </html>
