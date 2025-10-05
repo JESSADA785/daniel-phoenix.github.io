@@ -3,32 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DNX Farm</title>
+  <title>🌾 DNX Farm</title>
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.3.0/dist/ethers.min.js"></script>
 
   <style>
     body {
-      background: radial-gradient(circle at top, #000000 40%, #1a1a1a 100%);
-      color: #00ff88;
+      background: url('dnx_logo.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #00ffcc;
       font-family: "Poppins", sans-serif;
       text-align: center;
       padding: 60px 20px;
+      backdrop-filter: brightness(0.4);
     }
+
     h1 {
       color: #ffd700;
-      letter-spacing: 1px;
+      font-size: 2.5em;
+      text-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+      letter-spacing: 2px;
+      margin-bottom: 5px;
     }
+
+    p {
+      color: #ffffffcc;
+      font-size: 1.2em;
+    }
+
     .card {
-      background: #111;
+      background: rgba(0, 0, 0, 0.75);
       border: 2px solid #ffd700;
-      border-radius: 16px;
-      box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+      border-radius: 18px;
+      box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
       padding: 30px;
-      max-width: 400px;
-      margin: 40px auto;
+      max-width: 420px;
+      margin: 50px auto;
+      animation: fadeInUp 1.2s ease;
     }
+
     button {
-      background: linear-gradient(90deg, #00ff88, #00c878);
+      background: linear-gradient(90deg, #00ffcc, #00c878);
       color: #000;
       font-weight: bold;
       border: none;
@@ -36,27 +50,42 @@
       padding: 12px 18px;
       margin: 8px;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: 0.3s;
     }
+
     button:hover {
       transform: scale(1.05);
-      background: linear-gradient(90deg, #ffd700, #ffaa00);
+      background: linear-gradient(90deg, #ffd700, #ff9500);
       color: #000;
     }
+
     input {
       width: 80%;
       padding: 10px;
       margin: 10px 0;
       border-radius: 10px;
-      border: 1px solid #00ff88;
-      background: #000;
-      color: #00ff88;
+      border: 1px solid #00ffcc;
+      background: rgba(0,0,0,0.8);
+      color: #00ffcc;
       text-align: center;
     }
+
+    #balance {
+      margin-top: 10px;
+      font-size: 1.2em;
+      color: #ffd700;
+      text-shadow: 0 0 10px rgba(255,215,0,0.8);
+    }
+
     footer {
-      margin-top: 50px;
-      color: #777;
+      margin-top: 80px;
+      color: #aaa;
       font-size: 14px;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -67,23 +96,31 @@
 
   <div class="card">
     <button id="connect">🔗 Connect Wallet</button>
+    <div id="wallet" style="margin-top:10px;"></div>
+    <div id="balance"></div>
     <br />
     <input id="amount" placeholder="Enter DNX amount" />
     <br />
-    <button id="deposit">Deposit (Stake)</button>
-    <button id="withdraw">Withdraw</button>
+    <button id="deposit">💰 Deposit (Stake)</button>
+    <button id="withdraw">💎 Withdraw</button>
   </div>
 
-  <footer>
-    Powered by <b>DNX Finance</b> © 2025
-  </footer>
+  <footer>🚀 Powered by <b>DNX Finance</b> © 2025</footer>
 
   <script>
-    let provider, signer, contract;
-    const CONTRACT_ADDRESS = "0x9D9649e1710eF013465C34146874F967EEE73B03"; // ✅ DNXMasterChef
+    let provider, signer, contract, token;
+    const CONTRACT_ADDRESS = "0x9D9649e1710eF013465C34146874F967EEE73B03"; // MasterChef
+    const TOKEN_ADDRESS = "0x7DB860CC9D7f64Ed1B39de6621ebc94440C8dc62"; // DNX Token
+
     const ABI = [
       "function deposit(uint256 _amount) external",
-      "function withdraw(uint256 _amount) external"
+      "function withdraw(uint256 _amount) external",
+      "function userInfo(address) view returns (uint256 amount, uint256 rewardDebt)"
+    ];
+
+    const TOKEN_ABI = [
+      "function balanceOf(address account) view returns (uint256)",
+      "function decimals() view returns (uint8)"
     ];
 
     async function connect() {
@@ -91,8 +128,17 @@
       provider = new ethers.BrowserProvider(window.ethereum);
       await provider.send("eth_requestAccounts", []);
       signer = await provider.getSigner();
+      const addr = await signer.getAddress();
+      document.getElementById("wallet").innerHTML = "✅ Connected: " + addr.substring(0,6) + "..." + addr.slice(-4);
       contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
-      alert("✅ Wallet connected: " + (await signer.getAddress()));
+      token = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, signer);
+      getBalance(addr);
+    }
+
+    async function getBalance(addr) {
+      const info = await contract.userInfo(addr);
+      const staked = ethers.formatUnits(info.amount, 18);
+      document.getElementById("balance").innerHTML = "📊 Your Staked DNX: <b>" + staked + " DNX</b>";
     }
 
     async function deposit() {
@@ -101,6 +147,7 @@
         const tx = await contract.deposit(ethers.parseUnits(amt, 18));
         await tx.wait();
         alert("✅ Staked " + amt + " DNX successfully!");
+        getBalance(await signer.getAddress());
       } catch (err) {
         alert("❌ Transaction failed: " + err.message);
       }
@@ -112,6 +159,7 @@
         const tx = await contract.withdraw(ethers.parseUnits(amt, 18));
         await tx.wait();
         alert("✅ Withdrawn " + amt + " DNX successfully!");
+        getBalance(await signer.getAddress());
       } catch (err) {
         alert("❌ Transaction failed: " + err.message);
       }
@@ -123,4 +171,3 @@
   </script>
 </body>
 </html>
-
